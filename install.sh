@@ -18,8 +18,11 @@ else
     exit 1
 fi
 
+# create dir if not exists
+if [ ! -d "/usr/local/bin/docker-desktop-lite-fd" ]; then
+    sudo mkdir /usr/local/bin/docker-desktop-lite-fd
+fi
 
-sudo mkdir /usr/local/bin/docker-desktop-lite-fd
 sudo cp -a *.py /usr/local/bin/docker-desktop-lite-fd
 
 touch docker-desktop-lite
