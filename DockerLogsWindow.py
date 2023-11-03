@@ -23,6 +23,7 @@ class DockerLogsWindow(tk.Toplevel):
             text_widget.tag_configure('warning', foreground='orange')
             text_widget.tag_configure('error', foreground='red', font=('TkDefaultFont', 10, 'bold'))
             text_widget.tag_configure('debug', foreground='grey')
+            text_widget.tag_configure('good', foreground='green')
             
             start_button = ttk.Button(tab, text="Start watching", command=lambda c=cid, text_widget=text_widget: self.start_log_stream(c, text_widget))
             start_button.pack()
@@ -50,6 +51,8 @@ class DockerLogsWindow(tk.Toplevel):
         # Simple exemple de formatage basé sur le contenu de la ligne
         if 'error' in line.lower():
             tag = 'error'
+        elif '32m' or '39m' in line.lower():
+            tag = 'good'
         elif 'warning' in line.lower():
             tag = 'warning'
         elif 'info' in line.lower():

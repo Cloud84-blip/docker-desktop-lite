@@ -158,6 +158,7 @@ class App(tk.Tk):
                 print(f"Image {image_id} has been killed and removed.")
             except subprocess.CalledProcessError as e:
                 print(f"Failed to remove image {image_id}: {e}")
+        self.update_checkboxes()
     
     # Mettre à jour les checkboxes après la suppression des conteneurs
     def update_checkboxes(self):
