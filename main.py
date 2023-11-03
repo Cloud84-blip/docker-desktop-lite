@@ -8,7 +8,7 @@ from DockerExecWindow import DockerExecWindow
 def docker_ps():
     try:
         # Utilisez subprocess.run pour exécuter la commande et capturer la sortie
-        result = subprocess.run(['docker', 'ps', '--format', "table {{.ID}}\t{{.Names}}\t{{.Status}}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+        result = subprocess.run(['docker', 'ps', '--format', "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
 
         # Affiche la sortie standard
         print("Voici la liste des conteneurs Docker en cours d'exécution:")
@@ -221,10 +221,10 @@ class App(tk.Tk):
                 parts = re.split(r'\s{2,}', line)
                 
                 if len(parts) >= 3:  # S'assurer qu'il y a suffisamment de parties pour ID, nom et statut
-                    container_id, name, status = parts[0], parts[1], ' '.join(parts[2:])
+                    container_id, image, status, ports = parts[0], parts[1], ' '.join(parts[2:]), parts[3]
                     var = tk.BooleanVar()
-                    cb = tk.Checkbutton(self.check_frame, text=f"{name.upper()}", variable=var,
-                                        command=lambda id=container_id, name=name, var=var: self.update_checked_items(id, name, var.get()))
+                    cb = tk.Checkbutton(self.check_frame, text=f"{image.upper()}", variable=var,
+                                        command=lambda id=container_id, name=image, var=var: self.update_checked_items(id, name, var.get()))
                     cb.pack(anchor='w')
 
     def on_button_click_images(self):
