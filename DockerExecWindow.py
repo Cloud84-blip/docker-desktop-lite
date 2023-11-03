@@ -31,7 +31,7 @@ class DockerExecWindow:
                             capture_output=True)
         # Sur Windows, ouvrez un nouveau terminal avec le shell dans le conteneur
         elif os.sys.platform == "win32":
-            subprocess.run(["start", "cmd", "/k", f"docker exec -it {container_id} /bin/bash"],
+            subprocess.run(["start", "cmd", "/k", f"docker exec -it {container_id} sh"],
                             capture_output=True)
         # Sur Linux, ouvrez un nouveau terminal avec le shell dans le conteneur
         elif os.sys.platform == "linux":
