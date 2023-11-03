@@ -27,7 +27,7 @@ class DockerExecWindow:
         # Sur macOS, ouvrez un nouveau terminal avec le shell dans le conteneur
         if os.sys.platform == "darwin":
             subprocess.run(["osascript", "-e",
-                            f'tell app "Terminal" to do script "docker exec -it {container_id} /bin/bash"'],
+                            f'tell app "Terminal" to do script "docker exec -it {container_id} sh"'],
                             capture_output=True)
         # Sur Windows, ouvrez un nouveau terminal avec le shell dans le conteneur
         elif os.sys.platform == "win32":
@@ -35,7 +35,7 @@ class DockerExecWindow:
                             capture_output=True)
         # Sur Linux, ouvrez un nouveau terminal avec le shell dans le conteneur
         elif os.sys.platform == "linux":
-            subprocess.run(["gnome-terminal", "--", "bash", "-c", f"docker exec -it {container_id} /bin/bash"],
+            subprocess.run(["gnome-terminal", "--", "bash", "-c", f"docker exec -it {container_id} sh"],
                             capture_output=True)
         else:
             raise Exception("Platform not supported")
