@@ -17,3 +17,16 @@ else
     echo "Unsupported operating system"
     exit 1
 fi
+
+
+sudo mkdir /usr/local/bin/docker-desktop-lite-fd
+sudo cp *.py /usr/local/bin/docker-desktop-lite-fd
+
+touch docker-desktop-lite
+
+echo "#!/bin/bash" >> docker-desktop-lite
+echo "python3 /usr/local/bin/docker-desktop-lite-fd/main.py" >> docker-desktop-lite
+
+sudo chmod u+x docker-desktop-lite
+
+sudo mv docker-desktop-lite /usr/local/bin/
