@@ -20,7 +20,7 @@ fi
 
 
 sudo mkdir /usr/local/bin/docker-desktop-lite-fd
-sudo cp *.py /usr/local/bin/docker-desktop-lite-fd
+sudo cp -a *.py /usr/local/bin/docker-desktop-lite-fd
 
 touch docker-desktop-lite
 
@@ -29,4 +29,5 @@ echo "python3 /usr/local/bin/docker-desktop-lite-fd/main.py" >> docker-desktop-l
 
 sudo chmod u+x docker-desktop-lite
 
-sudo mv docker-desktop-lite /usr/local/bin/
+sudo cp -a docker-desktop-lite /usr/local/bin/
+sudo rm docker-desktop-lite
