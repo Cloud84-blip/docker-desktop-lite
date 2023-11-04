@@ -39,6 +39,27 @@ def docker_images():
     except FileNotFoundError:
         print("Il semble que Docker ne soit pas installé ou ne soit pas dans le PATH de l'utilisateur courant.")
 
+def docker_kill(container_id):
+    try:
+        subprocess.run(['docker', 'rm', '-f', container_id], check=True)
+        print(f"Container {container_id} has been killed.")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to kill container {container_id}: {e}")
+
+def docker_kill_image(image_reposistory):
+    try:
+        subprocess.run(['docker', 'rmi', '-f', image_reposistory], check=True)
+        print(f"Image {image_reposistory} has been killed.")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to kill image {image_reposistory}: {e}")
+
+def docker_compose():
+    try:
+        subprocess.run(['docker-compose', 'up', '-d'], check=True)
+        print(f"docker-compose up -d")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to docker-compose up -d: {e}")
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -52,10 +73,9 @@ class App(tk.Tk):
         self.checked_images = dict()
         self.create_widgets()
         self.create_widgets_for_images()
-        self.create_widegets_for_utils()
+        self.create_widgets_for_utils()
 
-
-    def create_widegets_for_utils(self):
+    def create_widgets_for_utils(self):
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="Utils")
         
@@ -75,13 +95,13 @@ class App(tk.Tk):
         self.check_frame_image.grid(row=1, column=0, sticky='nsew')
         
         self.button_image = ttk.Button(tab, text="docker images", command=self.on_button_click_images)
-        self.button_image.grid(row=0, column=2, sticky='e')
+        self.button_image.grid(row=0, column=2, sticky='nsew')
         
         self.button_image_kill = ttk.Button(tab, text="docker kill", command=self.docker_kill_and_remove_images)
-        self.button_image_kill.grid(row=1, column=2, sticky='e')
+        self.button_image_kill.grid(row=1, column=2, sticky='nsew')
         
         self.check_all_button_image = ttk.Button(tab, text="Select all", command=self.check_all_images)
-        self.check_all_button_image.grid(row=1, column=4, sticky='w')
+        self.check_all_button_image.grid(row=1, column=4, sticky='nsew')
     
     def create_widgets(self):
         tab = ttk.Frame(self.notebook)
@@ -92,23 +112,28 @@ class App(tk.Tk):
         self.label.grid(row=0, column=0, columnspan=2, sticky='nsew')
         
         self.button = ttk.Button(tab, text="docker ps", command=self.on_button_click)
-        self.button.grid(row=0, column=2, sticky='e')
-
+        self.button.grid(row=0, column=2, sticky='nsew')
+        
+        self.recompose_button = ttk.Button(tab, text="rebuild all", command=self.docker_recompose)
+        self.recompose_button.grid(row=0, column=3, sticky='nsew')
         # Ajouter un cadre pour contenir les cases à cocher
         self.check_frame = tk.Frame(tab)
         self.check_frame.grid(row=1, column=0, sticky='nsew')
         
         self.button_logs = ttk.Button(tab, text="docker logs", command=self.docker_logs)
-        self.button_logs.grid(row=1, column=2, sticky='e')
+        self.button_logs.grid(row=1, column=2, sticky='nsew')
         
         self.button_exec = ttk.Button(tab, text="docker exec", command=self.docker_exec)
-        self.button_exec.grid(row=1, column=3, sticky='e')
+        self.button_exec.grid(row=1, column=3, sticky='nsew')
         
         self.button_kill = ttk.Button(tab, text="docker kill", command=self.docker_kill_and_remove)
-        self.button_kill.grid(row=1, column=4, sticky='e')
+        self.button_kill.grid(row=2, column=3, sticky='nsew')
         
         self.check_all_button = ttk.Button(tab, text="Select all", command=self.check_all)
-        self.check_all_button.grid(row=2, column=3, sticky='w')
+        self.check_all_button.grid(row=4, column=2, sticky='nsew')
+        
+        self.rebuild_button = ttk.Button(tab, text="rebuild(update)", command=self.docker_rebuild)
+        self.rebuild_button.grid(row=3, column=3, sticky='nsew')
         
     def check_all(self):
         for widget in self.check_frame.winfo_children():
@@ -142,12 +167,7 @@ class App(tk.Tk):
 
     def docker_kill_and_remove(self):
         for container_id in self.checked_items.keys():
-            try:
-                subprocess.run(['docker', 'rm', '-f', container_id], check=True)
-                print(f"Container {container_id} has been killed and removed.")
-            except subprocess.CalledProcessError as e:
-                print(f"Failed to remove container {container_id}: {e}")
-        
+            docker_kill(container_id)
         # Mettre à jour les checkboxes et la liste des conteneurs sélectionnés
         self.update_checkboxes()
     
@@ -191,6 +211,23 @@ class App(tk.Tk):
         
     def docker_exec(self):
         self.exec_window = DockerExecWindow(self, self.checked_items)
+    
+    def docker_recompose(self):
+        self.check_all()
+        for container_id in self.checked_items.keys():
+            docker_kill(container_id)
+            docker_kill_image(self.checked_items[container_id])
+        # Mettre à jour les checkboxes et la liste des conteneurs sélectionnés
+        docker_compose()
+        self.update_checkboxes() 
+        
+    def docker_rebuild(self):
+        for container_id in self.checked_items.keys():
+            docker_kill(container_id)
+            docker_kill_image(self.checked_items[container_id])
+        # Mettre à jour les checkboxes et la liste des conteneurs sélectionnés
+        docker_compose()
+        self.update_checkboxes()
 
     def update_checked_items(self, container_id, name, is_checked):
         if is_checked:
